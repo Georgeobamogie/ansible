@@ -1,0 +1,45 @@
+---
+- name: Example playbook using multiple modules
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+  - name: Install Apache web server
+    yum:
+      name: httpd
+      state: present
+      
+  - name: Start Apache service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+      
+  - name: Create index.html file
+    copy:
+      src: files/index.html
+      dest: /var/www/html/index.html
+      
+  - name: Ensure index.html is owned by apache user
+    file:
+      path: /var/www/html/index.html
+      owner: apache
+      group: apache
+      
+  - name: Add firewall rule to allow HTTP traffic
+    firewalld:
+      service: http
+      state: enabled
+      permanent: yes
+      
+  - name: Check Apache is running and responding on port 80
+    wait_for:
+      port: 80
+      state: started
+      timeout: 60
+    register: apache_status
+    
+  - name: Debug Apache service status
+    debug:
+      var: apache_status
