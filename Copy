@@ -1,0 +1,21 @@
+---
+- name: Ping and copy files to all hosts
+  hosts: all
+  become: yes
+  become_method: sudo
+  
+  tasks:
+    - name: Ping all hosts
+      ping:
+
+    - name: Copy SSH config file
+      copy:
+        src: /path/to/ssh_config
+        dest: /etc/ssh/ssh_config
+        mode: 0600
+        
+    - name: Copy private key file
+      copy:
+        src: /path/to/private_key
+        dest: /root/.ssh/private_key
+        mode: 0600
